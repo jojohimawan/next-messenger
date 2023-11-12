@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image";
 import {
   Navbar, 
   NavbarBrand, 
@@ -7,9 +8,16 @@ import {
   NavbarItem, 
   Link, 
   Button,
+  Chip,
   Card,
-  CardBody} 
-from "@nextui-org/react";
+  CardFooter,
+  Input,
+  Dropdown,
+  DropdownTrigger,
+  Avatar,
+  DropdownMenu,
+  DropdownItem
+} from "@nextui-org/react";
 
 export default function Page() {
   return(
@@ -18,25 +26,133 @@ export default function Page() {
         <NavbarBrand>
             <p className="font-bold text-white text-2xl">P-Info</p>
         </NavbarBrand>
-        <NavbarContent justify="end">
-            <NavbarItem className="hidden lg:flex">
-                <Link href="#">Login</Link>
-            </NavbarItem>
-            <NavbarItem>
-                <Button as={Link} color="primary" href="#" variant="flat">
-                    Sign Up
-                </Button>
-            </NavbarItem>
-        </NavbarContent>
+        <NavbarContent as="div" className="items-center" justify="end">
+        <Input
+          classNames={{
+            base: "max-w-full sm:max-w-[10rem] h-10",
+            mainWrapper: "h-full",
+            input: "text-small",
+            inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+          }}
+          placeholder="Type to search..."
+          size="sm"
+          type="search"
+        />
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
+            <Avatar
+              isBordered
+              as="button"
+              className="transition-transform"
+              color="secondary"
+              name="Jason Hughes"
+              size="sm"
+              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            />
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Profile Actions" variant="flat" className="text-white">
+            <DropdownItem key="profile" className="h-14 gap-2">
+              <p className="font-semibold">Signed in as</p>
+              <p className="font-semibold">zoey@example.com</p>
+            </DropdownItem>
+            <DropdownItem key="settings">My Settings</DropdownItem>
+            <DropdownItem key="team_settings">Team Settings</DropdownItem>
+            <DropdownItem key="analytics">Analytics</DropdownItem>
+            <DropdownItem key="system">System</DropdownItem>
+            <DropdownItem key="configurations">Configurations</DropdownItem>
+            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+            <DropdownItem key="logout" color="danger">
+              Log Out
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </NavbarContent>
     </Navbar>
 
-    <div className="mx-auto flex flex-col justify-center items-center gap-y-8 mt-20 max-w-xl">
-      <h1 className="font-medium text-6xl text-white  text-center">Connect with your friends easily.</h1>
-      <Card>
-        <CardBody>
-          The best platform for your communications.
-        </CardBody>
-      </Card>
+    <div className="pt-20 mx-auto flex flex-row items-center ">
+      <div className="px-14 w-1/2">
+        <div className="flex flex-col gap-y-5">
+          <Chip color="primary" variant="dot">Introducing P-Info</Chip>
+          <h1 className="font-medium text-7xl text-white max-w-full lg:max-w-3xl text-start">Connect with your friends easily.</h1>
+          <p className="text-slate-500 text-lg mb-8">Just another platform for your communications.</p>
+          
+          <div className="flex flex-row gap-x-5">
+            <Button color="primary" size="lg"><Link href='#' color="foreground">Get Started</Link></Button>
+            <Button color="primary" variant="flat" size="lg">Visit Repo</Button>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div className="flex flex-col gap-x-2 w-1/2">
+        <div className="flex flex-row gap-x-5">
+          <div className="pb-20">
+          <Card
+            isFooterBlurred
+            radius="lg"
+            className="border-none"
+          >
+            <Image
+              alt="Person 1"
+              className="object-cover"
+              height={600}
+              src="/hero-1.jpg"
+              width={400}
+            />
+            <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+              <p className="text-tiny text-white/80">Available soon.</p>
+              <Button className="text-tiny text-white bg-black/20" variant="flat" color="default" radius="lg" size="sm">
+                Notify me
+              </Button>
+            </CardFooter>
+          </Card>
+
+
+          </div>
+
+          <div className="pt-20">
+          <Card
+            isFooterBlurred
+            radius="lg"
+            className="border-none"
+          >
+            <Image
+              alt="Person 2"
+              className="object-cover"
+              height={100}
+              src="/hero-3.jpg"
+              width={400}
+            />
+            <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+              <p className="text-tiny text-white/80">Available soon.</p>
+              <Button className="text-tiny text-white bg-black/20" variant="flat" color="default" radius="lg" size="sm">
+                Notify me
+              </Button>
+            </CardFooter>
+          </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="flex py-10">
+    <div className="mx-auto bg-black w-2/3 text-white p-12 flex flex-col gap-y-5 justify-center items-center">
+        <div><p className="text-3xl font-medium">A truly gamechanger for your modern agile team.</p></div>
+        <div className="flex flex-row gap-x-8">
+          <Button color="primary" size="lg" variant="flat" className="border border-primary text-white">
+            Fast
+          </Button>
+          <Button color="secondary" size="lg" variant="flat" className="border border-secondary text-white">
+            Realtime
+          </Button>
+          <Button color="success" size="lg" variant="flat" className="border border-success text-white">
+            User-Centered
+          </Button>
+          <Button color="danger" size="lg" variant="flat" className="border border-danger text-white">
+            Event-Driven
+          </Button>
+        </div>
+      </div>
     </div>
     </>
   )
