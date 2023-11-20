@@ -1,7 +1,12 @@
 'use client';
 
 import React from "react";
-import {Card, CardBody, CardFooter, CardHeader, Divider, Link, Image} from "@nextui-org/react";
+
+import CardRooms from "../components/molecule/CardRooms";
+import CardSenderChat from "../components/molecule/CardSenderChat";
+import CardReceiverChat from "../components/molecule/CardReceiverChat";
+import InputChat from "../components/molecule/InputChat";
+import NavbarChat from "../components/organism/NavbarChat";
 
 export default function App() {
     const message = [
@@ -30,28 +35,36 @@ export default function App() {
 
     return (
         <>
-        <aside className="fixed top-0 left-0 z-40 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-            <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
-                {message.map(message => {
-                    return(
-                        <Card isBlurred isPressable className="border-none bg-background/60 dark:bg-default-100/50 w-full rounded-none">
-                            <CardHeader className="flex gap-3">
-                                <div className="bg-primary text-white rounded-full p-5">
-                                    {message.name.charAt(0)}
-                                </div>
-                            <div className="flex flex-col">
-                            <p className="text-md">{message.name}</p>
-                            <p className="text-small text-default-500">nextui.org</p>
-                            </div>
-                            </CardHeader>
-                            <CardBody>
-                                <p>{message.message}</p>
-                            </CardBody>
-                        </Card>
-                    )
-                })}
+        <div className="flex flex-row">
+          <aside className="left-0 h-screen w-80" aria-label="Sidebar">
+              <div className="h-full overflow-y-auto bg-black">
+                  {message.map(message => {
+                      return(
+                        <CardRooms 
+                          lastMessage={message.message}
+                          initial={message.name.charAt(0)}
+                          name={message.name}
+                        />
+                      )
+                  })}
+              </div>
+          </aside>
+
+          <div className="w-full h-screen flex flex-col justify-between">
+            <NavbarChat name="Athena Asamiya" />
+
+            <div className="flex flex-col justify-between h-screen">
+              <div className="flex flex-col  overflow-y-auto">
+                <CardSenderChat message="Frontend developer and UI/UX enthusiast. Join me on this coding adventure!" />
+                <CardReceiverChat name="Dicky Syarif" message="Frontend developer and UI/UX enthusiast. Join me on this coding adventure!" />
+                
+              </div>
             </div>
-        </aside>
+              <div className="w-full px-10 py-5 flex flex-row gap-x-5 items-center">
+                <InputChat />
+              </div>
+          </div>
+        </div>
         </>
     );
 }
