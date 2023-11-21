@@ -8,42 +8,35 @@ import CardReceiverChat from "@/components/molecule/CardReceiverChat";
 import InputChat from "@/components/molecule/InputChat";
 import NavbarChat from "@/components/organism/NavbarChat";
 
-export default function App() {
-    const message = [
-        {
-          "name": "Alice",
-          "message": "Hello, how are you?"
-        },
-        {
-          "name": "Bob",
-          "message": "I'm doing great, thanks!"
-        },
-        {
-          "name": "Charlie",
-          "message": "What's up?"
-        },
-        {
-          "name": "Diana",
-          "message": "Have you seen the latest movie?"
-        },
-        {
-          "name": "Eve",
-          "message": "Yes, it was fantastic!"
-        }
-      ];
+type Props = {
+  id: number;
+  nama: string;
+}
+
+async function getUsers() {
+  const response = await fetch('http:localhost:3001/users/all');
+  if(response.ok) {
+    const responseBody = await response.json();
+    console.log(responseBody);
+    return responseBody;
+  }
+}
+
+export default async function Chats() {
+    const users = await getUsers();
 
     return (
         <>
         <div className="flex flex-row">
           <aside className="left-0 h-screen w-80" aria-label="Sidebar">
               <div className="h-full overflow-y-auto bg-black">
-                  {message.map((message, i) => {
+                  {users.data.map((user: Props, i:any) => {
                       return(
                         <CardRooms 
                           key={i}
-                          lastMessage={message.message}
-                          initial={message.name.charAt(0)}
-                          name={message.name}
+                          lastMessage={user.nama}
+                          initial={user.nama.charAt(0)}
+                          name={user.nama}
                         />
                       )
                   })}
