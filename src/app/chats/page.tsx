@@ -2,11 +2,11 @@
 
 import React from "react";
 
-import CardRooms from "../components/molecule/CardRooms";
-import CardSenderChat from "../components/molecule/CardSenderChat";
-import CardReceiverChat from "../components/molecule/CardReceiverChat";
-import InputChat from "../components/molecule/InputChat";
-import NavbarChat from "../components/organism/NavbarChat";
+import CardRooms from "@/components/molecule/CardRooms";
+import CardSenderChat from "@/components/molecule/CardSenderChat";
+import CardReceiverChat from "@/components/molecule/CardReceiverChat";
+import InputChat from "@/components/molecule/InputChat";
+import NavbarChat from "@/components/organism/NavbarChat";
 
 export default function App() {
     const message = [
@@ -32,15 +32,15 @@ export default function App() {
         }
       ];
 
-
     return (
         <>
         <div className="flex flex-row">
           <aside className="left-0 h-screen w-80" aria-label="Sidebar">
               <div className="h-full overflow-y-auto bg-black">
-                  {message.map(message => {
+                  {message.map((message, i) => {
                       return(
                         <CardRooms 
+                          key={i}
                           lastMessage={message.message}
                           initial={message.name.charAt(0)}
                           name={message.name}

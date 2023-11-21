@@ -2,11 +2,11 @@
 
 import {Card, CardHeader, CardBody} from "@nextui-org/react";
 
-interface CardSenderChatProps {
+type CardSenderChatProps = {
     message: string;
 }
 
-const CardSenderChat: React.FC<CardSenderChatProps> = ({message}) => {
+const CardSenderChat = (props: CardSenderChatProps) => {
 
     return(
         <>
@@ -20,7 +20,7 @@ const CardSenderChat: React.FC<CardSenderChatProps> = ({message}) => {
                     </div>
                     </CardHeader>
                     <CardBody className="px-3 py-0 text-small text-default-400">
-                        <p>{message}</p>
+                        <p>{props.message}</p>
                     </CardBody>
                 </Card>
             </div>
