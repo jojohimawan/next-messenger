@@ -7,8 +7,10 @@ import CardSenderChat from "@/components/molecule/CardSenderChat";
 import CardReceiverChat from "@/components/molecule/CardReceiverChat";
 import InputChat from "@/components/molecule/InputChat";
 import NavbarChat from "@/components/organism/NavbarChat";
+import NavbarRoom from "@/components/organism/NavbarRoom";
 
 import { getUsers } from "@/app/utils/get-users";
+import {get, create} from "@/app/utils";
 import { io, Socket } from "socket.io-client";
 
 type UsersData = {
@@ -25,12 +27,12 @@ type MessagesData = {
 }
 
 export default function Chats() {
+    const {createRoom} = create();
     const [users, setUsers] = useState<UsersData[]>([]);
     const [messages, setMessages] = useState<MessagesData[]>([]);
     const socket = useRef<any>();
 
     useEffect(() => {
-      // fetch('/api/socket', { method: 'POST' });
       socket.current = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false })
       socket.current.on("connect", () => {
         console.log("Connected " + socket.current.id)
@@ -74,13 +76,15 @@ export default function Chats() {
     return (
         <>
         <div className="flex flex-row">
-          <aside className="left-0 h-screen w-80" aria-label="Sidebar">
-              <div className="h-full overflow-y-auto bg-black">
+          <aside className="left-0  w-1/3" aria-label="Sidebar">
+            <NavbarRoom name={'lorem ipsum renaldi'} />
+              <div className="max-h-screen overflow-y-auto bg-black">
                   {!users ? <p className="text-white">gaonok</p> : 
                   users.map((user: UsersData, i:any) => {
                       return(
                         <CardRooms 
                           key={i}
+                          lastMessageSender="Dicky Syarif"
                           lastMessage={user.nama}
                           initial={user.nama.charAt(0)}
                           name={user.nama}
@@ -90,11 +94,11 @@ export default function Chats() {
               </div>
           </aside>
 
-          <div className="w-full h-screen flex flex-col justify-between">
-            <NavbarChat name={'lorem ipsum renaldi'} />
+          <div className="w-full h-screen flex flex-col justify-between overflow-y-auto">
+            <NavbarChat roomName={'Info Ngopi'} />
 
             <div className="flex flex-col justify-between h-screen">
-              <div className="flex flex-col  overflow-y-auto">
+              <div className="flex flex-col max-h-screen overflow-y-auto">
                 <CardSenderChat message="Frontend developer and UI/UX enthusiast. Join me on this coding adventure!" />
                 <CardReceiverChat name="Dicky Syarif" message="Frontend developer and UI/UX enthusiast. Join me on this coding adventure!" />
 

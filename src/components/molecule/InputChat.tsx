@@ -28,8 +28,14 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket}) => {
                 setTmp(data);
                 console.log(data);
             })
+
+            socket.current.on('message-received', (data: MessagesData) => {
+                // setMessages([...messages, data]);
+                setMessages(prevMessages => [...prevMessages, data]);
+                console.log(data);
+            })
         }
-    }, [socket])
+    }, [])
     
 
     const handleSend = () => {
@@ -40,10 +46,10 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket}) => {
             pesan: tmp,
             is_deleted: false,
         }
-        setMessages([...messages, msg]);
+        // setMessages([...messages, msg]);
         console.log(messages);
-
         setTmp('');
+        socket.current.emit('message-sent', msg);
     }
 
     const handleTyping = (e: React.FormEvent<HTMLInputElement>): void => {
@@ -51,10 +57,29 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket}) => {
         socket.current.emit('sendTyping', e.currentTarget.value)
     }
 
+    const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSend();
+        }
+    }
+
     return(
         <>
-        <Input type="text" placeholder="Type a message" className="w-full text-white" onChange={(e) => handleTyping(e)} value={tmp}/>
-        <Button radius="full" isIconOnly={true} size="lg" onClick={handleSend}>
+        <Input 
+            type="text" 
+            placeholder="Type a message" 
+            className="w-full text-white" 
+            onChange={(e) => handleTyping(e)} 
+            onKeyUp={(e) => handleEnter(e)}
+            value={tmp}
+        />
+        <Button 
+            radius="full" 
+            isIconOnly={true} 
+            size="lg" 
+            onClick={handleSend}
+        >
             <IconSend />
         </Button>
         </>
