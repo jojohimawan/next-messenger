@@ -10,8 +10,8 @@ const CardSenderChat = (props: CardSenderChatProps) => {
 
     return(
         <>
-            <div className="w-full flex justify-end px-10 pt-5">
-                <Card className="p-4">
+            <div className="w-full flex justify-end p-5">
+                <Card className="p-4 bg-primary">
                     <CardHeader className="justify-between">
                     <div className="flex gap-5">
                         <div className="flex flex-col gap-1 items-start justify-center">
@@ -19,7 +19,7 @@ const CardSenderChat = (props: CardSenderChatProps) => {
                         </div>
                     </div>
                     </CardHeader>
-                    <CardBody className="px-3 py-0 text-small text-default-400">
+                    <CardBody className="px-3 py-1 text-small text-white">
                         <p>{props.message}</p>
                     </CardBody>
                 </Card>

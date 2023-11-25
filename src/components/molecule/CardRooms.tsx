@@ -1,30 +1,38 @@
 'use client';
 
-import {Card, CardHeader, CardBody, Avatar} from "@nextui-org/react";
+import {Card, CardBody, Avatar} from "@nextui-org/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type CardRoomsProps = {
-    lastMessageSender: string;
-    lastMessage: string;
     initial: string;
     name: string;
+    room_id: number;
 }
 
-const CardRooms: React.FC<CardRoomsProps> = ({lastMessageSender, lastMessage, initial, name}) => {
+const CardRooms: React.FC<CardRoomsProps> = ({initial, name, room_id}) => {
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const handleSetQuery = (room_id: number) => {
+        const value = room_id.toString();
+        const query = value ? `?room_id=${value}` : '';
+
+        router.replace(`${pathname}${query}`);
+    }
 
     return(
         <>
-            <Card isBlurred isPressable className="border-b-1 border-white/50  w-full rounded-none px-3 pt-1">
-                <CardHeader className="flex gap-2">
+            <Card 
+                isBlurred 
+                isPressable 
+                className="border-b-1 border-white/50 w-full rounded-none px-3 pt-1" 
+                onClick={() => handleSetQuery(room_id)}
+            >
+                <CardBody className="flex flex-row gap-x-5 items-center">
                     <Avatar name={initial} size="lg"/>
-                    <div className="flex flex-col items-start">
-                        <p className="font-medium text-md">{name}</p>
-                        <p className="text-sm text-default-500">nextui.org</p>
-                    </div>
-                </CardHeader>
-                <CardBody>
-                    <div className="flex flex-row gap-x-2">
-                        <p className="text-sm font-bold">{lastMessageSender}:</p>
-                        <p className="text-sm">{lastMessage}</p>
+                    <div className="flex flex-col items-start gap-y-2">
+                        <p className="font-bold text-md">{name}</p>
+                        <p className="text-sm text-default-500">{`Room ID: ${room_id}`}</p>
                     </div>
                 </CardBody>
             </Card>

@@ -1,10 +1,10 @@
 'use client';
 
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Button } from "@nextui-org/react";
 import IconCamera from "../atom/IconCamera";
 import IconMagnifier from "../atom/IconMagnifier";
 import IconAdjuster from "../atom/IconAdjuster";
-
+import IconClose from "../atom/IconClose";
 interface NavbarChatProps {
     roomName: string;
 
@@ -15,6 +15,9 @@ const NavbarChat: React.FC<NavbarChatProps> = ({roomName}) => {
         <>
         <nav className="bg-black w-full flex flex-row border-b-1 border-white/50 py-5 px-5 items-center justify-between">
             <div className="flex flex-row gap-x-5 items-center">
+            <Button isIconOnly  aria-label="Like" className="bg-black">
+                <IconClose />
+            </Button>
                 <Avatar name="A" size="md"/>
                 <p className="text-white font-medium text-lg">{roomName}</p>
             </div>
