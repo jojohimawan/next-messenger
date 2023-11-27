@@ -52,12 +52,13 @@ export default function Chats() {
     const [enrolledRooms, setEnrolledRooms] = useState<EnrolledRooms[]>();
     const [hostedRooms, setHostedRooms] = useState<HostedRooms[]>();
     const [messages, setMessages] = useState<MessagesData[]>([]);
+    const [savedMessages, setSavedMessages] = useState<MessagesData[]>([]);
     const socket = useRef<any>();
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const {createRoom} = create();
-    const {getEnrolledRooms, getHostedRooms} = get();
+    const {getEnrolledRooms, getHostedRooms, getMessages} = get();
     
 
     useEffect(() => {
@@ -113,6 +114,25 @@ export default function Chats() {
       console.log(messages);
     }, [messages]);
 
+    useEffect(() => {
+      socket.current.emit('joinRoom', searchParams?.get('room_id'));
+      socket.current.on("joinedRoom", (data: string) => {
+        console.log(data);
+      })
+
+      async function fetchMessages() {
+        try {
+          const messages = await getMessages(Number(searchParams?.get('room_id')));
+          console.log(messages);
+          setSavedMessages(messages.data);
+        } catch (error) {
+          console.log('error: ' + error);
+        }
+      }
+
+      fetchMessages();
+    }, [searchParams])
+
     const findName = (id: number) => {
       const user = users.find((user) => user.id === id);
       if(!user) {
@@ -160,6 +180,15 @@ export default function Chats() {
             <NavbarChat roomName={'Info Ngopi'} />
             <ContainerOuterChat>
               <ContainerInnerChat>
+                {savedMessages.map((msg: MessagesData, i: any) => (
+                  msg.id === 1 ? (
+                    <CardSenderChat key={i} message={msg.is_deleted ? "This message was deleted" : msg.pesan} />
+                  ) :
+                  (
+                    <CardReceiverChat key={i} name={findName(msg.sender_id)} message={msg.is_deleted ? "This message was deleted" : msg.pesan} />
+                  )
+                ))}
+
                 {messages.map((msg: MessagesData, i: any) => (
                   msg.id === 1 ? (
                     <CardSenderChat key={i} message={msg.pesan} />

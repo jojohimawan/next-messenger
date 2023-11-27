@@ -1,9 +1,10 @@
 'use client';
 
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, Dispatch, SetStateAction} from "react";
 import {Input, Button} from "@nextui-org/react";
 import IconSend from "../atom/IconSend";
 import { Socket } from "socket.io-client";
+import { create } from "@/app/utils";
 
 type MessagesData = {
     id: number;
@@ -15,12 +16,13 @@ type MessagesData = {
 
 type Props = {
     messages: MessagesData[];
-    setMessages: (msg: MessagesData[]) => void;
+    setMessages: Dispatch<SetStateAction<MessagesData[]>>;
     socket:React.MutableRefObject<Socket>;
 }
 
 const InputChat: React.FC<Props> = ({messages, setMessages, socket}) => {
     const [tmp, setTmp] = useState<string>('');
+    const { createChat } = create();
 
     useEffect(() => {
         if(socket.current) {
@@ -34,22 +36,31 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket}) => {
                 setMessages(prevMessages => [...prevMessages, data]);
                 console.log(data);
             })
+
+            
         }
     }, [])
     
-
-    const handleSend = () => {
+    const handleSend = async () => {
         const msg: MessagesData = {
-            id: 2,
+            id: 0,
             room_id: 1,
             sender_id: 2,
             pesan: tmp,
             is_deleted: false,
         }
-        // setMessages([...messages, msg]);
         console.log(messages);
         setTmp('');
         socket.current.emit('message-sent', msg);
+        try {
+            const res = await createChat(msg);
+
+            if(res) {
+                alert('Message sent');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 
     const handleTyping = (e: React.FormEvent<HTMLInputElement>): void => {

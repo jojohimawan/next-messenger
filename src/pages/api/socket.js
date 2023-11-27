@@ -40,6 +40,13 @@ export default function handler(req, res) {
             io.emit('message-received', data);
             console.log('message sent');
         });
+
+        socket.on('joinRoom', (data) => {
+            socket.join(data);
+            console.log('joined room: ' + data);
+            const cuki = "berhasil"
+            io.to(data).emit('joinedRoom', cuki);
+        });
     });
 
     console.log('setting up socket...');

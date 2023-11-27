@@ -54,11 +54,23 @@ export default function get() {
         }
     }
 
+    async function getMessages(room_id: number) {
+        const response = await fetch(`http://localhost:3001/messages/room/${room_id}`);
+        if(response.ok) {
+            const responseBody = await response.json();
+            console.log(responseBody);
+            return responseBody;
+        } else {
+            throw new Error('Error getting messages');
+        }
+    }
+
     return {
         getUsers,
         getRooms,
         getUserRooms,
         getEnrolledRooms,
-        getHostedRooms
+        getHostedRooms,
+        getMessages
     }
 }

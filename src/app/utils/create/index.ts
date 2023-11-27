@@ -3,7 +3,12 @@ type CreateRoomParams = {
     room_name: string;
 }
 
-
+type CreateChatParams = {
+    room_id: number;
+    sender_id: number;
+    pesan: string;
+    is_deleted: boolean;
+}
 
 export default function create() {
     async function createRoom(data: CreateRoomParams): Promise<any> {
@@ -29,7 +34,33 @@ export default function create() {
         }
     }
 
+    async function createChat(data: CreateChatParams): Promise<any> {
+        const { room_id, sender_id, pesan, is_deleted } = data;
+        const response = await fetch('http://localhost:3001/messages/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                room_id: room_id,
+                sender_id: sender_id,
+                pesan: pesan,
+                is_deleted: is_deleted
+            }),
+        
+        });
+
+        if(response.ok) {
+            const responseBody = await response.json();
+            console.log(responseBody);
+            return true;
+        } else {
+            throw new Error('Error creating chat');
+        }
+    }
+
     return {
         createRoom,
+        createChat
     }
 }
