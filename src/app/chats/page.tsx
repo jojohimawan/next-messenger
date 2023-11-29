@@ -21,7 +21,8 @@ import ContainerRoom from "@/components/layout/ContainerRoom";
 
 import { getUsers } from "@/app/utils/get-users";
 import {get, create} from "@/app/utils";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import { getCookie } from "cookies-next";
 
 type UsersData = {
   id: number;
@@ -30,7 +31,7 @@ type UsersData = {
 
 type MessagesData = {
   id: number;
-  room_id: number;
+  room_id: string;
   sender_id: number;
   pesan: string;
   is_deleted: boolean;
@@ -47,34 +48,52 @@ type HostedRooms = {
   room_name: string;
 }
 
+const socket: Socket = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false });
+
 export default function Chats() {
     const [users, setUsers] = useState<UsersData[]>([]);
+    const [user, setUser] = useState<UsersData>({id: 0, nama: 'loading...'});
     const [enrolledRooms, setEnrolledRooms] = useState<EnrolledRooms[]>();
     const [hostedRooms, setHostedRooms] = useState<HostedRooms[]>();
     const [messages, setMessages] = useState<MessagesData[]>([]);
     const [savedMessages, setSavedMessages] = useState<MessagesData[]>([]);
-    const socket = useRef<any>();
+    // const socket = useRef<Socket>();
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const {createRoom} = create();
     const {getEnrolledRooms, getHostedRooms, getMessages} = get();
     
-
+    // const socket: Socket = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false });
+    
     useEffect(() => {
-      socket.current = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false })
-      socket.current.on("connect", () => {
-        console.log("Connected " + socket.current.id)
+    // socket = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false });
+
+      socket.on("connect", () => {
+        console.log("Connected " + socket.id)
       })
     
-      socket.current.on("disconnect", () => {
+      socket.on("disconnect", () => {
         console.log("Disconnected")
       })
     
-      socket.current.on("connect_error", async (err:any) => {
+      socket.on("connect_error", async (err:any) => {
         console.log(`connect_error due to ${err.message}`)
         await fetch("/api/socket")
       })
+
+      socket.on("joinedRoom", (data: string) => {
+        console.log(data);
+      })
+    }, []);
+
+    useEffect(() => {
+      const usersData = {
+        id: +getCookie('id')!,
+        nama: getCookie('name')!,
+      }
+
+      setUser(usersData);
 
       async function fetchUsers() {
         try {
@@ -87,7 +106,7 @@ export default function Chats() {
 
       async function fetchEnrolledRooms() {
         try {
-          const rooms = await getEnrolledRooms(1);
+          const rooms = await getEnrolledRooms(user.id);
           console.log(rooms);
           setEnrolledRooms(rooms.data);
         } catch (error) {
@@ -98,7 +117,7 @@ export default function Chats() {
 
       async function fetchHostedRooms() {
         try {
-          const rooms = await getHostedRooms(1);
+          const rooms = await getHostedRooms(+getCookie('id')!);
           console.log(rooms);
           setHostedRooms(rooms.data);
         } catch (error) {
@@ -108,17 +127,16 @@ export default function Chats() {
       fetchUsers();
       fetchEnrolledRooms();
       fetchHostedRooms();
-    }, []);
+    }, [])
 
     useEffect(() => {
       console.log(messages);
     }, [messages]);
 
     useEffect(() => {
-      socket.current.emit('joinRoom', searchParams?.get('room_id'));
-      socket.current.on("joinedRoom", (data: string) => {
-        console.log(data);
-      })
+      socket.emit('joinRoom', searchParams?.get('room_id'));
+      // console.log(searchParams?.get('room_id'));
+      setMessages([]);
 
       async function fetchMessages() {
         try {
@@ -130,6 +148,11 @@ export default function Chats() {
         }
       }
       fetchMessages();
+
+      return () => {
+        socket.emit('leaveRoom', searchParams?.get('room_id'));
+        socket.off("joinRoom");
+      }
     }, [searchParams])
 
     const findName = (id: number) => {
@@ -145,10 +168,11 @@ export default function Chats() {
         <>
         <WrapperGlobal>
           <ContainerAside>
-            <NavbarRoom name={'lorem ipsum renaldi'} />
+            <NavbarRoom name={user.nama} />
               <ContainerRoom>
                 <CardRoomType type="hosted" />
-                {!hostedRooms ? <p className="text-white">gaonok</p> : 
+                {!hostedRooms ? <p className="text-white mx-auto">fetching...</p> : 
+                  hostedRooms.length === 0 ? <p className="text-white text-center p-5">You haven't hosted any room.</p> :
                   hostedRooms.map((hostedRooms: HostedRooms, i:any) => {
                       return(
                         <CardRooms 
@@ -160,17 +184,18 @@ export default function Chats() {
                       )
                   })}
                 <CardRoomType type="enrolled" />
-                {!enrolledRooms ? <p className="text-white">gaonok</p> : 
+                {!enrolledRooms ? <p className="text-white mx-auto">fetching...</p> : 
+                enrolledRooms.length === 0 ? <p className="text-white text-center p-5">You haven't enrolled in any room.</p> :
                 enrolledRooms.map((enrolledRoom: EnrolledRooms, i:any) => {
-                    return(
-                      <CardRooms 
-                        key={i}
-                        initial={enrolledRoom.room_name.charAt(0)}
-                        name={enrolledRoom.room_name}
-                        room_id={enrolledRoom.room_id}
-                      />
-                    )
-                })}
+                  return(
+                    <CardRooms 
+                      key={i}
+                      initial={enrolledRoom.room_name.charAt(0)}
+                      name={enrolledRoom.room_name}
+                      room_id={enrolledRoom.room_id}
+                    />
+                  )
+              })}
               </ContainerRoom>
           </ContainerAside>
 
@@ -199,7 +224,7 @@ export default function Chats() {
               </ContainerInnerChat>
             </ContainerOuterChat>
             <ContainerInputChat>
-              <InputChat messages={messages} setMessages={setMessages} socket={socket}/>
+              <InputChat messages={messages} setMessages={setMessages} socket={socket} room_id={searchParams?.get('room_id')}/>
             </ContainerInputChat>
           </WrapperMainChat>}
         </WrapperGlobal>

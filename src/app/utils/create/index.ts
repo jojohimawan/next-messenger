@@ -4,7 +4,7 @@ type CreateRoomParams = {
 }
 
 type CreateChatParams = {
-    room_id: number;
+    room_id: string;
     sender_id: number;
     pesan: string;
     is_deleted: boolean;

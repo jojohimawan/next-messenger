@@ -1,6 +1,8 @@
 import { Server } from "socket.io";
 
 export default function handler(req, res) {
+    let room;
+
     if(res.socket.server.io) {
         console.log('socket already exists');
         res.end();
@@ -23,6 +25,18 @@ export default function handler(req, res) {
     io.on("connection", (socket) => {
         console.log(`Socket connected: ${socket.id}`);
 
+        socket.on('joinRoom', (data) => {
+            socket.join(data);
+            console.log('joined room: ' + data);
+            io.to(data).emit('joinedRoom', `join room: ${data}`);
+        });
+
+        socket.on('leaveRoom', (data) => {
+            socket.leave(data);
+            console.log('left room: ' + data);
+            io.to(data).emit('leftRoom', `left room: ${data}`);
+        });
+
         socket.on('message', (message) => {
             io.emit('message', message);
         });
@@ -37,16 +51,12 @@ export default function handler(req, res) {
         });
 
         socket.on('message-sent', (data) => {
-            io.emit('message-received', data);
+            console.log(data.room_id)
+            io.to(data.room_id).emit('message-received', data);
             console.log('message sent');
         });
 
-        socket.on('joinRoom', (data) => {
-            socket.join(data);
-            console.log('joined room: ' + data);
-            const cuki = "berhasil"
-            io.to(data).emit('joinedRoom', cuki);
-        });
+
     });
 
     console.log('setting up socket...');
