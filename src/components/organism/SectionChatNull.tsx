@@ -1,6 +1,7 @@
 'use client';
 
 import {Card, CardFooter, Image, Button} from "@nextui-org/react";
+import ModalJoinRoom from "./ModalJoinRoom";
 
 export default function SectionChatNull() {
     return(
@@ -29,6 +30,8 @@ export default function SectionChatNull() {
 
                 <h1 className="font-medium text-5xl text-white max-w-full lg:max-w-3xl text-start">Start Socializing.</h1>
                 <p className=" text-white max-w-full lg:max-w-3xl text-start">Chat with your friends, share your thoughts, dont let yourself missed out! ⚡</p>
+
+                <ModalJoinRoom />
                 </div>
             </div> 
         </>

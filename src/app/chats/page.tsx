@@ -129,7 +129,6 @@ export default function Chats() {
           console.log('error: ' + error);
         }
       }
-
       fetchMessages();
     }, [searchParams])
 
@@ -177,7 +176,7 @@ export default function Chats() {
 
           {!searchParams || !searchParams.has('room_id') ? <SectionChatNull /> :
           <WrapperMainChat>
-            <NavbarChat roomName={'Info Ngopi'} />
+            <NavbarChat roomName={'Info Ngopi'}/>
             <ContainerOuterChat>
               <ContainerInnerChat>
                 {savedMessages.map((msg: MessagesData, i: any) => (
@@ -194,7 +193,7 @@ export default function Chats() {
                     <CardSenderChat key={i} message={msg.pesan} />
                   ) :
                   (
-                    <CardReceiverChat key={i} name={findName(msg.sender_id)} message={msg.pesan} />
+                    <CardReceiverChat key={i} name={findName(msg.sender_id)} message={msg.pesan}/>
                   )
                 ))}
               </ContainerInnerChat>

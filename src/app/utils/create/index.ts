@@ -10,6 +10,11 @@ type CreateChatParams = {
     is_deleted: boolean;
 }
 
+type JoinRoomParams = {
+    room_id: number;
+    member_id: number;
+}
+
 export default function create() {
     async function createRoom(data: CreateRoomParams): Promise<any> {
         const { host_id, room_name } = data;
@@ -59,8 +64,32 @@ export default function create() {
         }
     }
 
+    async function joinRoom(data: JoinRoomParams): Promise<any> {
+        const { room_id, member_id } = data;
+        const response = await fetch('http://localhost:3001/rooms/enroll', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                room_id: room_id,
+                member_id: member_id
+            }),
+        
+        });
+
+        if(response.ok) {
+            const responseBody = await response.json();
+            console.log(responseBody);
+            return true;
+        } else {
+            throw new Error('Error joining room');
+        }
+    }
+
     return {
         createRoom,
-        createChat
+        createChat,
+        joinRoom
     }
 }
