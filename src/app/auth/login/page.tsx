@@ -5,17 +5,18 @@ import {Input, Button} from "@nextui-org/react";
 import {auth} from '@/app/utils';
 import { useRouter } from "next/navigation";
 import { setCookie } from 'cookies-next';
+import { useUser } from "@/app/context/userContext";
 
 export default function Page() {
     const {login} = auth();
     const [name, setName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [userCtx, setUserCtx] = useUser();
     const router = useRouter();
 
     const handleRegister = async () => {
         setIsLoading(true);
-        let uid: string;
         try {
             const res = await login({
                 name: name,
@@ -24,8 +25,11 @@ export default function Page() {
 
             if(res) {
                 console.log(res);
-                uid = res.data.id;
                 setCookie('isLogin', res.data.isLogin);
+                setUserCtx({id: res.data.id, name: res.data.nama});
+                window.localStorage.setItem('id', res.data.id);
+                window.localStorage.setItem('name', res.data.nama);
+                
             }
         } catch (error) {
             console.error('Error:', error);
@@ -34,7 +38,7 @@ export default function Page() {
                 setName('');
                 setPassword('');
                 setIsLoading(false);
-                router.push(`/chats?user_id=${uid}`);
+                router.push(`/chats`);
             }, 2000);
         }
     }

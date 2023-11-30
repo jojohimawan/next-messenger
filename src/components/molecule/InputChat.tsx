@@ -26,11 +26,6 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket, room_id}) =>
     const { createChat } = create();
 
     useEffect(() => {
-        socket.on('accTyping', (data: any) => {
-            setTmp(data);
-            console.log(data);
-        })
-
         socket.on('message-received', (data: MessagesData) => {
             setMessages(prevMessages => [...prevMessages, data]);
             console.log(data);
@@ -38,7 +33,6 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket, room_id}) =>
         })
 
         return () => {
-            socket.off('accTyping');
             socket.off('message-received');
         }
     }, [])
@@ -47,27 +41,22 @@ const InputChat: React.FC<Props> = ({messages, setMessages, socket, room_id}) =>
         const msg: MessagesData = {
             id: 0,
             room_id: room_id!,
-            sender_id: 2,
+            sender_id: +window.localStorage.getItem('id')!,
             pesan: tmp,
             is_deleted: false,
         }
         console.log(messages);
         setTmp('');
         socket.emit('message-sent', msg);
-        // try {
-        //     const res = await createChat(msg);
-
-        //     if(res) {
-        //         alert('Message sent');
-        //     }
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
+        try {
+            const res = await createChat(msg);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 
     const handleTyping = (e: React.FormEvent<HTMLInputElement>): void => {
         setTmp(e.currentTarget.value);
-        socket.emit('sendTyping', e.currentTarget.value)
     }
 
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {

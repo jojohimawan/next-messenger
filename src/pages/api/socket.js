@@ -36,27 +36,16 @@ export default function handler(req, res) {
             console.log('left room: ' + data);
             io.to(data).emit('leftRoom', `left room: ${data}`);
         });
-
-        socket.on('message', (message) => {
-            io.emit('message', message);
-        });
-
-        socket.on('disconnect', () => {
-            console.log(`Socket disconnected: ${socket.id}`);
-        });
-
-        socket.on('sendTyping', (data) => {
-            io.emit('accTyping', data);
-            console.log('typing');
-        });
-
+        
         socket.on('message-sent', (data) => {
             console.log(data.room_id)
             io.to(data.room_id).emit('message-received', data);
             console.log('message sent');
         });
-
-
+        
+        socket.on('disconnect', () => {
+            console.log(`Socket disconnected: ${socket.id}`);
+        });
     });
 
     console.log('setting up socket...');

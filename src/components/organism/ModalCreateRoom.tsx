@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input} from "@nextui-org/react";
 import IconAdd from "../atom/IconAdd";
 import { create } from "@/app/utils";
 
@@ -14,7 +14,7 @@ export default function ModalCreateRoom() {
         setIsLoading(true);
         try {
             const res = await createRoom({
-                host_id: 1,
+                host_id: +window.localStorage.getItem('id')!,
                 room_name: roomName,
             });
 
@@ -25,6 +25,7 @@ export default function ModalCreateRoom() {
             console.error('Error:', error);
         } finally {
             setTimeout(() => {
+                setRoomName('');
                 setIsLoading(false);
                 onClose();
             }, 2000);

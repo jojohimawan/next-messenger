@@ -15,8 +15,8 @@ const CardRoomType: React.FC<CardRoomTypeProps> = ({type}) => {
         <>
             <Card isPressable className="w-full rounded-none px-5 pt-2 bg-primary">
                 <CardBody className="flex flex-row gap-x-5 items-center">
-                    {type === 'host' ? <IconUser /> : <IconUsers />}
-                    <p className="font-bold text-md">{type === 'host' ? 'Hosted Rooms' : 'Enrolled Rooms'}</p>
+                    {type === 'hosted' ? <IconUser /> : <IconUsers />}
+                    <p className="font-bold text-md">{type === 'hosted' ? 'Hosted Rooms' : 'Enrolled Rooms'}</p>
                 </CardBody>
             </Card>
         </>

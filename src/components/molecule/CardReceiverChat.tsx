@@ -15,7 +15,7 @@ const CardReceiverChat = (props: CardSReceiverChatProps) => {
                 <Card className="p-4">
                     <CardHeader className="justify-between">
                         <div className="flex gap-5">
-                            <Avatar isBordered radius="full" size="md" name="A" className="bg-primary"/>
+                            <Avatar isBordered radius="full" size="md" name={props.name.charAt(0)} className="bg-primary"/>
                             <div className="flex flex-col gap-1 items-start justify-center">
                                 <h4 className="text-small font-semibold leading-none text-default-600">{props.name}</h4>
                                 <h5 className="text-small tracking-tight text-default-400">@{props.name}</h5>

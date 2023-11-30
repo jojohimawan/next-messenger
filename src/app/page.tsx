@@ -77,8 +77,8 @@ export default function Page() {
           <p className="text-slate-500 text-lg mb-8">Just another platform for your communications.</p>
           
           <div className="flex flex-row gap-x-5">
-            <Button color="primary" size="lg"><Link href='#' color="foreground">Get Started</Link></Button>
-            <Button color="primary" variant="flat" size="lg">Visit Repo</Button>
+            <Button color="primary" size="lg"><Link href='/auth/login' color="foreground">Get Started</Link></Button>
+            <Button color="primary" variant="flat" size="lg"><Link href='https://github.com/jojohimawan/next-messenger' color="primary">Visit Repo</Link></Button>
           </div>
         </div>
         

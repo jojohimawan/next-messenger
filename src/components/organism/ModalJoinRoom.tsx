@@ -17,7 +17,7 @@ export default function ModalJoinRoom() {
         try {
             const res = await joinRoom({
                 room_id: +roomId,
-                member_id: 2,
+                member_id: +window.localStorage.getItem('id')!,
             });
 
             if(res) {

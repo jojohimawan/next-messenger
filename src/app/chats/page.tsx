@@ -1,7 +1,7 @@
 'use client';
 
-import React, {useEffect, useState, useRef} from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, {useEffect, useState} from "react";
+import { useSearchParams } from "next/navigation";
 
 import CardRooms from "@/components/molecule/CardRooms";
 import CardSenderChat from "@/components/molecule/CardSenderChat";
@@ -20,7 +20,9 @@ import ContainerAside from "@/components/layout/ContainerAside";
 import ContainerRoom from "@/components/layout/ContainerRoom";
 
 import { getUsers } from "@/app/utils/get-users";
-import {get, create} from "@/app/utils";
+import { get } from "@/app/utils";
+import { useUser } from "@/app/context/userContext";
+
 import { io, Socket } from "socket.io-client";
 import { getCookie } from "cookies-next";
 
@@ -57,18 +59,12 @@ export default function Chats() {
     const [hostedRooms, setHostedRooms] = useState<HostedRooms[]>();
     const [messages, setMessages] = useState<MessagesData[]>([]);
     const [savedMessages, setSavedMessages] = useState<MessagesData[]>([]);
-    // const socket = useRef<Socket>();
-    const router = useRouter();
     const searchParams = useSearchParams();
 
-    const {createRoom} = create();
+    const [userCtx, setUserCtx] = useUser();
     const {getEnrolledRooms, getHostedRooms, getMessages} = get();
     
-    // const socket: Socket = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false });
-    
     useEffect(() => {
-    // socket = io('http://localhost:3000', { path: "/api/socket", addTrailingSlash: false });
-
       socket.on("connect", () => {
         console.log("Connected " + socket.id)
       })
@@ -85,6 +81,8 @@ export default function Chats() {
       socket.on("joinedRoom", (data: string) => {
         console.log(data);
       })
+
+      console.log(userCtx);
     }, []);
 
     useEffect(() => {
@@ -92,38 +90,8 @@ export default function Chats() {
         id: +getCookie('id')!,
         nama: getCookie('name')!,
       }
-
       setUser(usersData);
 
-      async function fetchUsers() {
-        try {
-          const users = await getUsers();
-          setUsers(users.data);
-        } catch (error) {
-          console.log('error: ' + error);
-        }
-      }
-
-      async function fetchEnrolledRooms() {
-        try {
-          const rooms = await getEnrolledRooms(user.id);
-          console.log(rooms);
-          setEnrolledRooms(rooms.data);
-        } catch (error) {
-          console.log('error: ' + error);
-        }
-
-      }
-
-      async function fetchHostedRooms() {
-        try {
-          const rooms = await getHostedRooms(+getCookie('id')!);
-          console.log(rooms);
-          setHostedRooms(rooms.data);
-        } catch (error) {
-          console.log('error: ' + error);
-        }
-      }
       fetchUsers();
       fetchEnrolledRooms();
       fetchHostedRooms();
@@ -135,18 +103,8 @@ export default function Chats() {
 
     useEffect(() => {
       socket.emit('joinRoom', searchParams?.get('room_id'));
-      // console.log(searchParams?.get('room_id'));
       setMessages([]);
 
-      async function fetchMessages() {
-        try {
-          const messages = await getMessages(Number(searchParams?.get('room_id')));
-          console.log(messages);
-          setSavedMessages(messages.data);
-        } catch (error) {
-          console.log('error: ' + error);
-        }
-      }
       fetchMessages();
 
       return () => {
@@ -154,6 +112,46 @@ export default function Chats() {
         socket.off("joinRoom");
       }
     }, [searchParams])
+
+    async function fetchUsers() {
+      try {
+        const users = await getUsers();
+        setUsers(users.data);
+      } catch (error) {
+        console.log('error: ' + error);
+      }
+    }
+
+    async function fetchEnrolledRooms() {
+      try {
+        const rooms = await getEnrolledRooms(+window.localStorage.getItem('id')!);
+        console.log(rooms);
+        setEnrolledRooms(rooms.data);
+      } catch (error) {
+        console.log('error: ' + error);
+      }
+
+    }
+
+    async function fetchHostedRooms() {
+      try {
+        const rooms = await getHostedRooms(+window.localStorage.getItem('id')!);
+        console.log(rooms);
+        setHostedRooms(rooms.data);
+      } catch (error) {
+        console.log('error: ' + error);
+      }
+    }
+
+    async function fetchMessages() {
+      try {
+        const messages = await getMessages(Number(searchParams?.get('room_id')));
+        console.log(messages);
+        setSavedMessages(messages.data);
+      } catch (error) {
+        console.log('error: ' + error);
+      }
+    }
 
     const findName = (id: number) => {
       const user = users.find((user) => user.id === id);
@@ -168,7 +166,7 @@ export default function Chats() {
         <>
         <WrapperGlobal>
           <ContainerAside>
-            <NavbarRoom name={user.nama} />
+            <NavbarRoom name={window.localStorage.getItem('name')!} />
               <ContainerRoom>
                 <CardRoomType type="hosted" />
                 {!hostedRooms ? <p className="text-white mx-auto">fetching...</p> : 
@@ -201,12 +199,12 @@ export default function Chats() {
 
           {!searchParams || !searchParams.has('room_id') ? <SectionChatNull /> :
           <WrapperMainChat>
-            <NavbarChat roomName={'Info Ngopi'}/>
+            <NavbarChat roomName={`Chat Room ID: ${""+searchParams.get('room_id')}`}/>
             <ContainerOuterChat>
               <ContainerInnerChat>
                 {savedMessages.map((msg: MessagesData, i: any) => (
-                  msg.id === 1 ? (
-                    <CardSenderChat key={i} message={msg.is_deleted ? "This message was deleted" : msg.pesan} />
+                  msg.sender_id === +window.localStorage.getItem('id')! ? (
+                    <CardSenderChat key={i} message={msg.is_deleted ? "This message was deleted" : msg.pesan} id={msg.id} />
                   ) :
                   (
                     <CardReceiverChat key={i} name={findName(msg.sender_id)} message={msg.is_deleted ? "This message was deleted" : msg.pesan} />
@@ -214,8 +212,8 @@ export default function Chats() {
                 ))}
 
                 {messages.map((msg: MessagesData, i: any) => (
-                  msg.id === 1 ? (
-                    <CardSenderChat key={i} message={msg.pesan} />
+                  msg.sender_id === +window.localStorage.getItem('id')! ? (
+                    <CardSenderChat key={i} message={msg.pesan} id={msg.id}/>
                   ) :
                   (
                     <CardReceiverChat key={i} name={findName(msg.sender_id)} message={msg.pesan}/>

@@ -16,8 +16,7 @@ const NavbarRoom: React.FC<NavbarRoomProps> = ({name}) => {
             <div className="flex flex-row gap-x-3 items-center">
             <ModalCreateRoom />
             <Button isIconOnly color="danger" aria-label="Like" onClick={() => {
-                deleteCookie('id');
-                deleteCookie('name');
+                window.localStorage.clear();
                 deleteCookie('isLogin');
                 window.location.reload();
             }}>
