@@ -1,8 +1,6 @@
 import { Server } from "socket.io";
 
 export default function handler(req, res) {
-    let room;
-
     if(res.socket.server.io) {
         console.log('socket already exists');
         res.end();
